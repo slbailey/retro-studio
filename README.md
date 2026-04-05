@@ -79,16 +79,39 @@ git clone https://github.com/slbailey/retrovue.git
 | Teams | 6 |
 | Skills | 37 |
 
-### Org overview (reporting spine)
+### Agents (summary)
 
-| Tier | Roles |
-|------|--------|
-| Executive | **ceo** |
-| Directors | **scheduling-director**, **playout-director**, **ingest-director**, **systems-architect**, **qa-director** |
-| Leads | **playout-lead**, **systems-lead** (incl. **documentation-architect**), **qa-lead** |
-| Engineering / analysis | Schedule, playout, ingest, systems, and QA engineers and analysts under the above |
+Directory name is `agents/<slug>/`. **Reports to** uses the manager’s slug, or **—** for the root role.
 
-Full reporting lines, delegation, and **What You Must NOT Do** boundaries are in each `agents/*/AGENTS.md`.
+| Slug | Title | Reports to | Function |
+|------|-------|------------|----------|
+| `ceo` | Studio Head & CEO | — | Cross-domain alignment, escalations from QA/systems; does not replace Board/owner. |
+| `scheduling-director` | Scheduling Director | `ceo` | Schedule domain: timeline, ScheduleService, EPG horizon; not Playlog or runtime. |
+| `schedule-engineer` | Schedule Engineer | `scheduling-director` | Implements channel timeline + ScheduleService / EPG horizon as one surface. |
+| `schedule-constraints-analyst` | Schedule Constraints Analyst | `scheduling-director` | Conflict detection, hard starts, back-to-back rules; reconciliation *inputs*, not Playlog. |
+| `playout-director` | Playout Director | `ceo` | Playlog, channel orchestration, ffmpeg Producers, OverlayStages; how authorized intent airs. |
+| `playout-lead` | Playout Lead | `playout-director` | Day-to-day playout coordination across playlog, runtime, ffmpeg, overlay engineers. |
+| `playlog-engineer` | Playlog Engineer | `playout-lead` | Playlog structure: segments, ordering, durations, transitions, executable constraints. |
+| `channel-runtime-engineer` | Channel Runtime Engineer | `playout-lead` | ChannelManager / ProgramDirector: now/next, handoffs, fault posture under MasterClock. |
+| `ffmpeg-engineer` | FFmpeg Engineer | `playout-lead` | ffmpeg Producer pipelines: transcode, concat, branding, encoder-chain outputs. |
+| `overlay-engineer` | Overlay Engineer | `playout-lead` | OverlayStages: bugs, crawls, lower-thirds; clock-aligned, not a parallel scheduler. |
+| `ingest-director` | Ingest Director | `ceo` | Ingest domain: intake, normalization, metadata, availability signals for downstream. |
+| `media-prep-engineer` | Media Prep Engineer | `ingest-director` | Media intake and normalization; mezzanine/prep matching Producer expectations. |
+| `metadata-engineer` | Metadata Engineer | `ingest-director` | Catalog IDs and descriptive metadata for scheduling / EPG consumers. |
+| `availability-analyst` | Availability Analyst | `ingest-director` | Readiness, holds, embargoes; signals so schedule/playout do not assume false airability. |
+| `systems-architect` | Systems Architect | `ceo` | Cross-cutting invariants, clock discipline, boundaries; may challenge any domain. |
+| `systems-lead` | Systems Lead | `systems-architect` | Coordinates clock, API boundary, persistence, and documentation-architect work. |
+| `master-clock-engineer` | Master Clock Engineer | `systems-lead` | MasterClock semantics; sole time authority; no ad hoc wall-clock scattering. |
+| `service-boundary-engineer` | Service Boundary Engineer | `systems-lead` | FastAPI / service contracts; preserve domain ownership on integration surfaces. |
+| `persistence-governance-engineer` | Persistence Governance Engineer | `systems-lead` | Cross-domain Postgres/SQLAlchemy migrations and shared-table governance. |
+| `documentation-architect` | Documentation Architect | `systems-lead` | System-wide doc coherence vs contracts/invariants; contradictions; no implementation code. |
+| `qa-director` | QA Director | `ceo` | Contract→test policy, merge-bar advisories; evidence-based; escalates to CEO/Board context. |
+| `qa-lead` | QA Lead | `qa-director` | Assigns test, integration QA, and simulation engineers; triage and consolidation. |
+| `test-engineer` | Test Engineer | `qa-lead` | Executable tests mapped to contracts and invariants before/around implementation. |
+| `integration-qa-engineer` | Integration QA Engineer | `qa-lead` | End-to-end paths: schedule/EPG → Playlog → channel runtime under clock policies. |
+| `broadcast-simulation-engineer` | Broadcast Simulation Engineer | `qa-lead` | Scenario and fault simulation for air chains, rolls, overlays, degraded modes. |
+
+*(Delegation, **What You Must NOT Do**, and optional `skills` are defined in each `agents/<slug>/AGENTS.md`.)*
 
 ### Teams
 
