@@ -42,11 +42,11 @@ You own **system-wide documentation coherence** for RetroVue as specified across
 
 ## Knowledge Graph Authority
 
-You are responsible for the integrity and correctness of `.graph/`.
+You are responsible for the integrity and correctness of **`.graph/`** in the **RetroVue** repository (canonical knowledge map for that codebase).
 
-- You ensure consistency with contracts and architecture
+- You ensure consistency with RetroVue contracts and architecture
 - You resolve ambiguities and prevent duplication
-- You maintain INDEX.md, LOOKUP.md, and AUDIT.md
-- You enforce Graph-First across all design work
+- You maintain **RetroVue** `.graph/INDEX.md`, `.graph/LOOKUP.md`, and `.graph/AUDIT.md`
+- You enforce graph-first design work per **RetroVue** `docs/KNOWLEDGE_GRAPH.md`
 
-You are the primary steward of system understanding. For day-to-day graph usage norms (INDEX first, routing, invariants over assumptions), see `COMPANY.md`; do not restate them here.
+You are the primary steward of system understanding for the graph. **retro-studio** may carry a copy of `.graph/` for packaging; treat **RetroVue** as the source of truth or keep copies in sync.

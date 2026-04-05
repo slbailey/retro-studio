@@ -81,7 +81,7 @@ All material changes follow:
 
 **Question → Options → Decision → Draft → Approval**
 
-1. **Question**: Frame the engineering or operational problem in terms of **domain** (**Domain Boundaries** and `.graph/INDEX.md`), **clock**, and **data ownership**.
+1. **Question**: Frame the engineering or operational problem in terms of **domain** (**Domain Boundaries** table below; for RetroVue code and architecture, follow **RetroVue** `docs/KNOWLEDGE_GRAPH.md` and `.graph/INDEX.md` in that repository), **clock**, and **data ownership**.
 2. **Options**: Enumerate approaches with **tradeoffs** (latency, EPG accuracy, Playlog granularity, failure modes, migration risk).
 3. **Decision**: Record the chosen approach and **non-goals** for the change.
 4. **Draft**: Implement in-repo (services, models, tests, configs) consistent with existing patterns.
@@ -98,56 +98,13 @@ All material changes follow:
 
 Cross-domain changes require explicit **clock and ownership** notes so EPG, Playlog, and runtime do not diverge silently.
 
-## Knowledge Graph Usage
-
-The repository knowledge graph lives under **`.graph/`** (RetroVue-oriented, contracts-aligned). It is the **canonical map** for domain boundaries, entities, services, invariants, ambiguities, and relationships—not a code index.
-
-- **All design, architecture, and system reasoning MUST begin from `.graph/`** for RetroVue: open the relevant domain and edges before inferring structure from memory or source tree layout.
-- **Agents MUST consult `.graph/INDEX.md` first** to pick domain, routing, and question patterns; then `LOOKUP.md` for slug → file → YAML hints when drilling down.
-- **Agents MUST follow domain boundaries and routing rules** stated in `INDEX.md` and `domains/*.md`; do not collapse scheduling, playout, ingest, or systems concerns without crossing the graph intentionally.
-- **Agents MUST NOT rely on memory or unstated assumptions** when `.graph/` (or the RetroVue contracts it points to) already defines an entity, service, invariant, or edge.
-- **Invariants recorded in `.graph/` override agent assumptions** for authority and behavior; if code or docs disagree, treat that as a **defect to surface**, not something to paper over.
-
-The graph does **not** replace RetroVue **`docs/contracts/`**; it **routes** to them and encodes structure for agents in **retro-studio**.
-
-## Knowledge Graph Maintenance
-
-The graph is **maintained in lockstep** with architectural truth. Updates are **mandatory**, not optional, when any of the following occur:
-
-- A **new invariant** is introduced or materially changed (add or update `invariants/**` and YAML `constrained_by` / `forbids` as appropriate).
-- A **new service or entity** is created that belongs in the model (add stub + `LOOKUP.md` row + edges).
-- A **domain boundary** moves or splits (update `domains/*.md`, `INDEX.md` routing if needed, and YAML).
-- An **ambiguity** is discovered or resolved (add/update `ambiguities/*.md` and `cross-domain.yaml` anchors, or retire with a traceable note in `AUDIT.md`).
-- **Contract meaning** changes for a component already in the graph (update the relevant stubs and edges; do not leave stale “must NOT” or ownership notes).
-
-**Audits (`AUDIT.md`):** Run the checklist in **`.graph/AUDIT.md`** after substantive graph edits, after RetroVue contract merges that touch modeled components, and before treating a change as **release-ready** for architecture. **documentation-architect** is responsible for executing or delegating the audit and recording outcomes; **technical-director** (or Board delegate) confirms that **drift** (graph vs contracts vs code intent) is either fixed or explicitly accepted. Resolve drift by **updating `.graph/` and contracts**, not by weakening the checklist.
-
-## Agent responsibilities (knowledge graph)
-
-| Role | Graph responsibility |
-|------|----------------------|
-| **documentation-architect** | Owns **structure and consistency** of `.graph/` (INDEX, LOOKUP, YAML edge discipline, ambiguity files, stub quality). |
-| **technical-director** | **Validates** architectural correctness against the graph and RetroVue contracts before boundary or authority changes are treated as settled. |
-| **producer** | Ensures **Board / workflow decisions** that affect domains, services, or ownership are **reflected in `.graph/`** when they change how the system is reasoned about—not only in narrative docs. |
-| **All agents** | **Consult** `.graph/` before reasoning about RetroVue architecture; **do not** bypass it for convenience. |
-
-If a role is unfilled, the **Board** assigns the duty to a named lead for that change set.
-
-## Graph-First Rule
-
-Before **writing code**, **changing architecture**, or **redefining boundaries** in a way that touches components or invariants represented in `.graph/`, agents MUST:
-
-1. **Update or validate `.graph/`** (stubs, YAML, `INDEX.md` / `LOOKUP.md` if slugs or routes change).
-2. **Confirm invariants** (graph stubs + RetroVue `docs/contracts/` as source of truth for IDs).
-3. **Confirm ownership and relationships** (`owns`, `depends_on`, `consumes`, `forbids`, etc.) match the intended authority model.
-
-**Only then** proceed with the **Engineering Execution Model** (next section): **Contracts → Invariants → Tests → Code** in RetroVue. Purely local, non-architectural edits with **no** graph impact are exempt, but the burden is to **prove** non-impact; when in doubt, run Graph-First.
+**RetroVue knowledge graph:** Architectural navigation, graph-first rules, and maintenance expectations for **`.graph/`** in the **RetroVue** repository are defined in **RetroVue** `docs/KNOWLEDGE_GRAPH.md` (entry: `.graph/INDEX.md` there). This **retro-studio** package does not embed those rules in `COMPANY.md` because company packages are often loaded once at creation time.
 
 ## Engineering Execution Model
 
 Agents are responsible for **implementing code**, **writing tests**, and **refining implementations** until they meet the defined bar. That work **must** follow the sequence below. **Deviations are not permitted**; this sequence is **mandatory** and is the **primary mechanism** by which RetroVue preserves **correctness**.
 
-For any change in scope of the **Graph-First Rule**, complete that rule **before** step 1.
+For RetroVue code and boundaries, complete **graph-first** steps in **RetroVue** `docs/KNOWLEDGE_GRAPH.md` **before** step 1 when the change touches modeled components.
 
 **Required order:**
 
@@ -171,7 +128,7 @@ For any change in scope of the **Graph-First Rule**, complete that rule **before
 
 | Repository | Role |
 |------------|------|
-| **RetroVue** ([github.com/slbailey/retrovue](https://github.com/slbailey/retrovue)) | Application and service codebase for the network: FastAPI apps, SQLAlchemy models, Producer and overlay implementations, runtime daemons, infrastructure definitions — **what runs** |
+| **RetroVue** ([github.com/slbailey/retrovue](https://github.com/slbailey/retrovue)) | Application and service codebase for the network: FastAPI apps, SQLAlchemy models, Producer and overlay implementations, runtime daemons, infrastructure definitions — **what runs**; includes **`.graph/`** (knowledge map) and **`docs/KNOWLEDGE_GRAPH.md`** (agent instructions for using it) |
 | **retro-studio** (this package) | **Paperclip Agent Company** definition: `COMPANY.md`, `agents/`, `teams/`, `skills/`, Paperclip-oriented configuration — **who plans and edits** the RetroVue codebase; **not** a substitute for the runtime repository |
 
 **Paperclip** imports **retro-studio**. Engineering work that changes **on-air behavior** lands in **RetroVue** (or its designated deployment artifacts) according to the workflow protocol above; this repo defines **agent roles, boundaries, and operating rules** only.

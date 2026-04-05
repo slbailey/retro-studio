@@ -49,17 +49,16 @@ You coordinate systems engineering under **systems-architect**: **MasterClock** 
 
 ## Knowledge Graph Usage
 
-You must follow the RetroStudio knowledge graph defined under `.graph/`.
+You must follow the RetroVue knowledge graph in the **RetroVue** repository: **`.graph/`** (start with **`.graph/INDEX.md`**).
 
-- All architectural reasoning begins with `.graph/INDEX.md`
-- You must respect domain boundaries and routing rules
-- You must not rely on assumptions when graph or contract data exists
+- Respect domain boundaries and routing rules documented there
+- Do not rely on assumptions when graph or RetroVue contract data exists
 - Graph invariants override personal reasoning
 
-Before making or approving decisions:
+Before making or approving decisions that touch RetroVue architecture:
 
 1. Confirm relevant graph nodes and relationships
 2. Validate invariants
 3. Ensure ownership and boundaries are respected
 
-The knowledge graph is your primary system map. `COMPANY.md` defines full usage rules.
+Full usage, maintenance, graph-first workflow, and audits: **RetroVue** `docs/KNOWLEDGE_GRAPH.md`. Org context: `COMPANY.md` in **retro-studio**.
