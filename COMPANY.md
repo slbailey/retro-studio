@@ -1,60 +1,134 @@
 ---
-name: Gratifire
-description: Game design studio building the Gratifire iOS game with React — coordinated AI agents for creative, engineering, QA, and production, with development executed over SSH on a remote Mac mini
-slug: gratifire
+name: RetroStudio
+description: AI broadcast operations company for RetroVue — simulated linear TV network design and runtime; coordinated agents for scheduling, playout engineering, ingest, and experience layers; agents design and implement the system (FastAPI, Postgres/SQLAlchemy, ffmpeg producers, MasterClock time authority); RetroVue runtime operates independently in deployment
+slug: retro-studio
 schema: agentcompanies/v1
 version: 1.0.0
 license: MIT
 authors:
-  - name: Gratifire
+  - name: RetroStudio
 goals:
-  - Ship Gratifire as a polished iOS application built primarily with React (e.g. React Native / Expo)
-  - Keep creative and production workflows aligned while engineering runs builds, tests, and Xcode work on a remote Mac mini via SSH
-  - Maintain quality through reviews, playtesting, and release gates appropriate for the App Store
+  - Design, implement, and operate RetroVue as a coherent linear channel system with authoritative scheduling, playout, and observability
+  - Keep channel timeline, EPG horizon (ScheduleService), Playlog, and runtime (ChannelManager, ProgramDirector) aligned under MasterClock
+  - Maintain broadcast-grade discipline in ingest, encoding (ffmpeg Producers), overlays (OverlayStages), and service boundaries; automated runtime where appropriate; Board-directed design and architecture; agent implementation follows the defined methodology
 tags:
-  - game-development
-  - ios
-  - react
-  - react-native
-  - mobile
-  - remote-build
+  - broadcast-engineering
+  - linear-tv
+  - fastapi
+  - postgres
+  - sqlalchemy
+  - ffmpeg
+  - retrovue
 ---
 
-Gratifire is a **game design studio** focused on one product: **Gratifire**, an iOS game delivered as a **React-based** app. The org mirrors a small professional studio (creative, engineering, narrative, audio, QA, production) while the **technical stack is fixed**: JavaScript/TypeScript and React patterns on the client, native iOS packaging and signing through Apple’s toolchain, executed on a **remote Mac mini** when local development machines are not macOS.
+**RetroStudio — AI Broadcast Operations Company for RetroVue.**
 
-## Two repositories
+RetroStudio operates **RetroVue**: a **simulated linear TV network** implemented as software. The organization is **not** a consumer game studio; it is a **broadcast engineering and programming** shop that specifies services, data models, and runtime behavior appropriate to **scheduled linear playout**, **EPG semantics**, and **master-reference timing**.
 
-| Repository | GitHub | Contents |
-|------------|--------|----------|
-| **Game (application)** | [github.com/slbailey/gratifire](https://github.com/slbailey/gratifire) | React iOS app source, `package.json`, `ios/`, tests, app CI, `docs/DEV_MAC_MINI.md`, everything that ships to players |
-| **Studio (Agent Company)** | [github.com/slbailey/gratifire-game-studios](https://github.com/slbailey/gratifire-game-studios) | This package: `COMPANY.md`, `agents/`, `teams/`, `skills/`, Paperclip config — **no** substitute for the game codebase |
+## Mission
 
-**Paperclip** imports the **studio** repo. The **Mac mini** clones or pulls the **game** repo. Cross-link both READMEs so contributors know where to work.
+Deliver RetroVue as a **deterministic, time-driven linear channel** where schedule intent (what airs when) is separated from **fine-grained playout execution** (how segments roll under clock), with **one clock** governing all scheduling and runtime decisions. The **RetroVue runtime** is **designed for automated operation** where appropriate. **System design**, **architecture**, and **major decisions** are **directed by the Board**; agents **collaborate** with the Board to **design and implement** RetroVue. Agents **do not replace** human authority.
 
-## Architecture
+## System Overview
 
-| Layer | Responsibility |
-|-------|----------------|
-| **Game & UX** | Creative direction, game design, narrative, audio, art, UX — same studio disciplines, scoped to a mobile React experience |
-| **Application code** | React components, state, gameplay logic, networking — owned by **lead-programmer** with **react-specialist** and **gameplay-programmer** |
-| **Platform / iOS** | Xcode projects, schemes, signing, TestFlight, App Store Connect, Simulator/Device runs — owned by **ios-build-engineer** (typically via SSH to the Mac mini) |
-| **Infra** | CI, secrets, SSH access, automation hooks — **devops-engineer** with **ios-build-engineer** |
+RetroVue is a **stack of services and runtime components** around a **Postgres** datastore accessed through **SQLAlchemy**. **FastAPI** exposes APIs and integration surfaces. The **channel timeline model** ties long-horizon programming intent to executable air chains. **ScheduleService** maintains the **EPG horizon** (electronic program guide lookahead and consistency). **Playlog** holds the **fine-grained playout plan** (segment-level ordering, durations, transitions, and constraints as defined by the system). At runtime, **ChannelManager** and **ProgramDirector** coordinate **what is on air** and **how the stack advances** relative to **MasterClock**, the **single time authority** for the network. **ffmpeg-based Producers** realize media assembly and encoding paths. **OverlayStages** apply **on-air graphics and text treatments** (bugs, crawls, and similar **broadcast overlay** concepts) without breaking clock alignment.
 
-## Remote Mac mini workflow
+## Architecture Alignment
 
-Engineering agents assume **authoritative iOS builds and Xcode operations happen on a Mac mini** reached with **SSH** (e.g. `ssh user@gratifire-mac.local`). Day-to-day flow:
+| RetroVue concern | Primary components / artifacts |
+|------------------|--------------------------------|
+| **Time authority** | **MasterClock** — sole reference for “now,” schedule alignment, and playhead advancement |
+| **APIs & integration** | **FastAPI** services; contracts between scheduling, playout control, and experience-facing reads |
+| **Persistence** | **Postgres** + **SQLAlchemy** models and migrations; authoritative store for timelines, EPG, Playlog, and operational state |
+| **Long-horizon intent** | **Channel timeline model**; **ScheduleService** for **EPG horizon** maintenance and validation |
+| **Executable air plan** | **Playlog** — granular playout instructions derived from or reconciled with schedule and media availability |
+| **Runtime control** | **ChannelManager** + **ProgramDirector** — orchestration of current and next events, handoffs, and fault posture |
+| **Media pipeline** | **ffmpeg-based Producers** — transcode, concat, branding passes, and technical outputs as defined by engineering |
+| **On-air presentation** | **OverlayStages** — lower-thirds, bugs, crawls, and other layered video treatments |
 
-1. Edit and review TypeScript/React in the **game** repo ([slbailey/gratifire](https://github.com/slbailey/gratifire)) on any OS.
-2. Sync or push changes so the Mac mini has the **game** repo’s current tree (git pull, rsync, or CI artifact — as the team defines).
-3. Run installs, `pod install` if applicable, `xcodebuild`, tests, and Simulator/Device deploys **over SSH** on the mini.
-4. Capture logs and artifacts back to the developer (scp, CI upload, or shared folder).
+## Operating Model
 
-Agents document exact commands in runbooks; they never invent credentials or bypass signing rules.
+- **Agents as design and engineering**: Agents are responsible for **system design**, **architecture decisions**, **simulation**, **documentation**, and **validation of ideas** (including reviews, test strategy, and evidence-backed conclusions). They are **not** modeled as **runtime operators** of RetroVue.
+- **Runtime boundary**: **RetroVue** remains a **separate system** in deployment and operation. It runs under its own services, processes, and operational controls. Agents **do not** directly operate that runtime **in real time**; they shape what gets built and how it is specified.
+- **Human authority**: The **owner** is **final decision authority**. **Major architectural changes** require **owner approval** before they are treated as settled.
+- **Broadcast mindset**: Treat airtime, **back-to-back** constraints, **hard starts**, **roll** events, and **EPG truth** as first-class engineering requirements, not presentation niceties.
+- **Single clock discipline**: Any component that schedules, logs, or drives playout must **derive time from MasterClock semantics** (or an explicitly documented equivalent boundary), not ad hoc wall-clock calls scattered through the stack.
 
-## Operating model
+## Governance Model
 
-- **Pipeline**: Same phase mindset as before (ideation → post-launch), tuned for a single React iOS product.
-- **Hub-and-spoke**: Producer coordinates; **technical-director** owns stack and architecture; **creative-director** owns player-facing vision.
-- **Collaboration protocol**: **Question → Options → Decision → Draft → Approval** before material file changes.
+**Final authority** rests with the **Board**. Agent review and dissent are **advisory**: they **do not** veto or block Board decisions.
 
-Derived workflow patterns from [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios); stack, **two-repo layout**, and company definition are Gratifire-specific.
+### Agents
+
+Agents are **required** to:
+
+- **Challenge incorrect assumptions** and weak reasoning when evidence or invariants contradict them.
+- **Identify risks and failure modes** (technical, operational, and data-integrity) early and explicitly.
+- **Question decisions** that would **violate system invariants** or documented boundaries, rather than accommodating them silently.
+
+Pushback is delivered in a **professional**, **direct**, **non-emotional** manner: factual, specific, and free of sarcasm or hostility.
+
+### Decision Integrity
+
+- **Agreement is not the default; correctness is.** Prefer accurate models and safe outcomes over smooth consensus.
+- Agents **prioritize system integrity over consensus** when the two conflict.
+- If a proposal conflicts with **MasterClock authority**, **Playlog correctness**, **scheduling invariants**, or **system boundaries** (including domain separation), agents **must** state the conflict **explicitly**.
+- Agents **should** supply **alternative approaches**, **tradeoffs**, and **potential consequences** so the Board can decide with full context.
+
+## Workflow Protocol
+
+All material changes follow:
+
+**Question → Options → Decision → Draft → Approval**
+
+1. **Question**: Frame the engineering or operational problem in terms of **domain** (see below), **clock**, and **data ownership**.
+2. **Options**: Enumerate approaches with **tradeoffs** (latency, EPG accuracy, Playlog granularity, failure modes, migration risk).
+3. **Decision**: Record the chosen approach and **non-goals** for the change.
+4. **Draft**: Implement in-repo (services, models, tests, configs) consistent with existing patterns.
+5. **Approval**: Gate merge through **review criteria** appropriate to **on-air risk** (schema changes, clock behavior, Producer contracts, overlay timing).
+
+## Engineering Execution Model
+
+Agents are responsible for **implementing code**, **writing tests**, and **refining implementations** until they meet the defined bar. That work **must** follow the sequence below. **Deviations are not permitted**; this sequence is **mandatory** and is the **primary mechanism** by which RetroVue preserves **correctness**.
+
+**Required order:**
+
+1. **Contracts** — Specify **expected outcomes** and **observable invariants**. No implementation detail: only what must hold at boundaries and under defined inputs.
+2. **Invariants** — State **rules the system must never violate**, with emphasis on **MasterClock** semantics, **Playlog correctness**, and **scheduling domain boundaries** (and related cross-cutting constraints as applicable).
+3. **Tests** — Tests are the **executable encoding** of contracts. **Each contract maps to one or more tests** (directly or via explicit derivation documented in the change).
+4. **Code** — Implementation begins **only after** contracts, invariants, and their tests exist. **All tests must pass**; code is unacceptable otherwise.
+
+**Prohibited:**
+
+- **Jumping** straight to implementation before contracts and tests are defined.
+- **Inventing** behavior not grounded in stated contracts.
+- **Bypassing**, weakening, or skipping tests to merge.
+
+**Required:**
+
+- **Iterate** on implementation until **all tests pass**.
+- **Preserve alignment** with the **existing architecture** (layers, services, domain boundaries) unless the change set explicitly revises that architecture under Board-approved governance.
+
+## Domain Boundaries
+
+| Domain | Scope |
+|--------|--------|
+| **Scheduling** | Channel timeline, **ScheduleService**, EPG horizon, conflict detection, program metadata, and reconciliation inputs to Playlog |
+| **Playout** | Playlog consumption, **ChannelManager** / **ProgramDirector**, MasterClock alignment, handoffs, and **what hits the encoder chain** |
+| **Ingest** | Source media intake, normalization, metadata, availability signals feeding schedule and Playlog builders |
+| **Experience** | Viewers’ or integrators’ consumption surfaces (read models, EPG presentation, status APIs) — **must not** become the time authority or covert scheduler |
+
+Cross-domain changes require explicit **clock and ownership** notes so EPG, Playlog, and runtime do not diverge silently.
+
+## Repository Relationships
+
+| Repository | Role |
+|------------|------|
+| **RetroVue** ([github.com/slbailey/retrovue](https://github.com/slbailey/retrovue)) | Application and service codebase for the network: FastAPI apps, SQLAlchemy models, Producer and overlay implementations, runtime daemons, infrastructure definitions — **what runs** |
+| **retro-studio** (this package) | **Paperclip Agent Company** definition: `COMPANY.md`, `agents/`, `teams/`, `skills/`, Paperclip-oriented configuration — **who plans and edits** the RetroVue codebase; **not** a substitute for the runtime repository |
+
+**Paperclip** imports **retro-studio**. Engineering work that changes **on-air behavior** lands in **RetroVue** (or its designated deployment artifacts) according to the workflow protocol above; this repo defines **agent roles, boundaries, and operating rules** only.
+
+---
+
+Derived workflow patterns from [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios); **company definition, stack, and repository layout** are RetroStudio / RetroVue–specific.
